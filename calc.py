@@ -1,4 +1,5 @@
 def clac(s):
-    a=int(s[0])+int(s[2])
-    return int(a)
+    nums=map(int,s.split("+"))
+    print("nums=",nums)
+    return sum(nums)
 print(clac("1+2"))
