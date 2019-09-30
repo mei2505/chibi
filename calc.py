@@ -1,3 +1,4 @@
 def clac(s):
-    return int(s)
-print(clac("1"))
+    a=int(s[0])+int(s[2])
+    return int(a)
+print(clac("1+2"))
