@@ -30,6 +30,8 @@ class Q(object):
         c=q.a
         d=q.b
         return Q(a*d,c*b)
+
+
 q1=Q(1,2)
 q2=Q(1,3)
 print(q1+q2)
