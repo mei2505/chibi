@@ -23,8 +23,20 @@ class Add(object):
 
 e=Add(Val(1),Val(2))
 assert e.eval()==3
-e=Add(Val(1),Add(Val(2),Val(3)))
-assert e.eval()==6
+ee=Add(Val(1),Add(Val(2),Val(3)))
+assert ee.eval()==6
 
-print(e)
-print(e)
+print(e.eval())
+print(ee.eval())
+
+class Mul(object):
+    __slots__=["left","right"]
+    def __init__(self,a,b):
+        self.left=a
+        self.right=b
+    def eval(self):
+        return self.left.eval()-self.right.eval()
+
+e=Mul(Val(2),Val(1))
+assert e.eval()==1
+print(e.eval())
