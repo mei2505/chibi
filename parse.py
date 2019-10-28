@@ -14,3 +14,9 @@ print("pos",pos)
 s1=s[0:pos]
 s2=s[pos+1:]
 print(s,s1,s2)
+
+s="1+2"
+pos=s.find("+")
+s1=int(s[0:pos])
+s2=int(s[pos+1:])
+print(s1+s2)
