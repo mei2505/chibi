@@ -20,6 +20,7 @@ def toExpr(a):
     return a
 
 class Binary(Expr):
+    __slots__=["left","right"]
     def __repr__(self):
         cname = self.__class__.__name__
         return f'{cname}({self.left},{self.right})'
