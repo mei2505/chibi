@@ -23,7 +23,6 @@ class Val(Expr):
 
 v=Val(1)
 assert v.eval()==1
-print(v)
 
 class Add(Expr):
     __slots__=["left","right"]
@@ -42,8 +41,6 @@ assert e.eval()==3
 ee=Add(Val(1),Add(Val(2),Val(3)))
 assert ee.eval()==6
 
-print(e.eval())
-print(ee.eval())
 
 class Sub(Expr):
     __slots__=["left","right"]
@@ -55,7 +52,7 @@ class Sub(Expr):
 
 e=Sub(Val(2),Val(1))
 assert e.eval()==1
-print(e.eval())
+
 
 class Mul(Expr):
     __slots__=["left","right"]
@@ -67,7 +64,7 @@ class Mul(Expr):
 
 e=Mul(Val(2),Val(2))
 assert e.eval()==4
-print(e.eval())
+
 
 class Div(Expr):
     __slots__=["left","right"]
@@ -77,9 +74,3 @@ class Div(Expr):
     def eval(self):
         return self.left.eval()//self.right.eval()
 
-e=Div(Val(7),Val(2))
-assert e.eval()==3
-print(e.eval())
-
-assert isinstance(Val(1))
-assert isinstance(Div(Val(7),Val(2)),Expr)
