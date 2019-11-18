@@ -1,9 +1,9 @@
 
-example Zip 128-0021
+example Expr 1+2+3
 
-Zip={
-    Value '-' Value
-    #Zip
+Expr={
+    Value ('+' Value)+
+    #Add
 }
 
 DIGIT=[0-9]
