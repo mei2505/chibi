@@ -52,67 +52,119 @@ class Mod(Binary):
     __slots__ = ['left', 'right']
     def eval(self, env: dict):
         return self.left.eval(env) % self.right.eval(env)
-
+class Eq(Binary):   #left==right
+    __slots__ = ['left', 'right']
+    def eval(self, env: dict):  #cond ? x:y
+        return 1 if self.left.eval(env) == self.right.eval(env) else 0
+class Ne(Binary):   #left==right
+    __slots__ = ['left', 'right']
+    def eval(self, env: dict):  
+        return 1 if self.left.eval(env) != self.right.eval(env) else 0
+class Lt(Binary):   #left==right
+    __slots__ = ['left', 'right']
+    def eval(self, env: dict): 
+        return 1 if self.left.eval(env) < self.right.eval(env) else 0
+class Gt(Binary):   #left==right
+    __slots__ = ['left', 'right']
+    def eval(self, env: dict):  
+        return 1 if self.left.eval(env) > self.right.eval(env) else 0
+class Lte(Binary):   #left==right
+    __slots__ = ['left', 'right']
+    def eval(self, env: dict):  
+        return 1 if self.left.eval(env) <= self.right.eval(env) else 0
+class Gte(Binary):   #left==right
+    __slots__ = ['left', 'right']
+    def eval(self, env: dict):  
+        return 1 if self.left.eval(env) >= self.right.eval(env) else 0
 class Var(Expr):
-    __slots__ = ['name']    
-    def __init__(self,name):
-        self.name = name 
-    def eval(self,env:dict):
+    __slots__ = ['name']
+    def __init__(self, name):
+        self.name = name
+    def eval(self, env: dict):
         if self.name in env:
             return env[self.name]
-        return 0
+        raise NameError(self.name)
 class Assign(Expr):
-    __slots__ = ['name','e']
-    def __init__(self,name:str,e:Expr):
+    __slots__ = ['name', 'e']
+    def __init__(self, name, e):
         self.name = name
         self.e = Expr.new(e)
-    def eval(self,new):
+    def eval(self, env):
         env[self.name] = self.e.eval(env)
         return env[self.name]
-
-env = {}
-e = Assign('x',Val(1))
-print(e.eval(env))
-e = Assign('x',Add(Var('x'),Val(2)))
-print(e.eval(env))
-
-try:
-    e=Var('x')
-    print(e.eval({}))
-except NameError:
-    print("未定義の変数です")
+class Block(Expr):
+    __slots__ = ['exprs']
+    def __init__(self,*exprs):  #可変長個の引数
+        self.exprs=exprs    #リストになっている
+    def eval(self,env):
+        for e in self.exprs:
+            e.eval(env)
+class While(Expr):
+    __slots__ = ['cond','body']
+    def __init__(self,cond,body):
+        self.cond=cond
+        self.body=body
+    def eval(self,env):
+        while self.cond.eval(env) != 0:
+            self.body.eval(env)  
+class If(Expr):
+    __slots__=['cond','then','else']
+    def __init__(self,cond,then,else_):
+        self.cond=cond
+        self.then=then
+        self.else_=else_
+    def eval(self,env):
+        yesorno = self.cond.eval(env)
+        if yesorno == 1:
+            return self.then.eval(env)
+        else:
+            return self.else_.eval(env)
 
 def conv(tree):
     if tree == 'Block':
         return conv(tree[0])
+    if tree == 'If':
+        return If(conv(tree[0]),conv(tree[1],),conv(tree[2]))
+    if tree == 'While':
+        return While(conv(tree[0]),conv(tree[1]))
     if tree == 'Val' or tree == 'Int':
         return Val(int(str(tree)))
     if tree == 'Add':
         return Add(conv(tree[0]), conv(tree[1]))
     if tree == 'Sub':
-        return Sub(conv(tree[0]), conv(tree[1]))
+        return Sub(conv(tree[0]), conv(tree[1]))    
     if tree == 'Mul':
         return Mul(conv(tree[0]), conv(tree[1]))
     if tree == 'Div':
         return Div(conv(tree[0]), conv(tree[1]))
     if tree == 'Mod':
         return Mod(conv(tree[0]), conv(tree[1]))
+    if tree == 'Eq':
+        return Eq(conv(tree[0]), conv(tree[1]))
+    if tree == 'Ne':
+        return Ne(conv(tree[0]), conv(tree[1]))
+    if tree == 'Lt':
+        return Lt(conv(tree[0]), conv(tree[1]))
+    if tree == 'Gt':
+        return Gt(conv(tree[0]), conv(tree[1]))
+    if tree == 'Lte':
+        return Lte(conv(tree[0]), conv(tree[1]))
+    if tree == 'Gte':
+        return Gte(conv(tree[0]), conv(tree[1]))  
     if tree == 'Var':
         return Var(str(tree))
-    if tree =='LetDecl':
-        return Assign(str(tree[0]),conv(tree[1]))
-    print('@TODO', tree.tag)
+    if tree == 'LetDecl':
+        return Assign(str(tree[0]), conv(tree[1]))
+    print('@TODO', tree.tag, repr(tree))
     return Val(str(tree))
-
-def run(src: str,env:dict):
+def run(src: str, env: dict):
     tree = parser(src)
     if tree.isError():
         print(repr(tree))
     else:
         e = conv(tree)
-        print('env',env)
+        print('env', env)
         print(e.eval(env))
-
 def main():
     try:
         env = {}
@@ -120,7 +172,7 @@ def main():
             s = input('>>> ')
             if s == '':
                 break
-            run(s,env)
+            run(s, env)
     except EOFError:
         return
 if __name__ == '__main__':
