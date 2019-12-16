@@ -119,9 +119,45 @@ class If(Expr):
             return self.then.eval(env)
         else:
             return self.else_.eval(env)
+
+class Lambda(Val):
+    __slots__ = ['name','body']
+    def __init__(self,name:str,body:Expr):
+        self.name = name
+        self.body = body
+    def __repr__(self):
+        return f'λ{self.name} . {str(self.body)}'
+    def eval(self,env):
+        return self
+        
+def copy(env):
+    newenv={}
+    for x in env.keys():
+        newenv[x] = env[x]
+    return newenv
+
+class FuncApp(Expr):
+    __slots__ = ['func','param']
+    def __init__(self,func:Lambda,param):
+        self.func = func
+        self.param = Expr.new(param)
+    def __repr__(self):
+        return f'({repr(self.func)}) ({repr(self.param)})'
+    def eval(self,env):
+        f = self.func.eval(env)
+        v = self.param.eval(env)
+        name = f.name
+        env = copy(env)
+        env[name] = v
+        return f.body.eval(env)       
+
 def conv(tree):
     if tree == 'Block':
         return conv(tree[0])
+    if tree == 'FuncDecl':
+        return Assign(str(tree[0]),Lambda(str(tree[1]),conv(tree[2])))
+    if tree == 'FuncApp':
+        return FuncApp(conv(tree[0]),conv(tree[1]))
     if tree == 'If':
         return If(conv(tree[0]),conv(tree[1],),conv(tree[2]))
     if tree == 'While':
