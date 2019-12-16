@@ -25,6 +25,7 @@ print(s1+s2)
 '''
 
 def parse(s:str):
+
     if s.find("+")>0:
         pos=s.find("+")
         s1=s[0:pos]
@@ -47,5 +48,5 @@ def parse(s:str):
         return Div(parse(s1),parse(s2))
     return Val(int(s))
 
-e=parse("8/4/2")
+e=parse("8/4+2")
 print(e,e.eval())
